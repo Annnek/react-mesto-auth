@@ -10,6 +10,7 @@ import AddPlacePopup from "./AddPlacePopup.js";
 import ImagePopup from "./ImagePopup.js";
 import api from "../utils/Api.js";
 import CurrentUserContext from "../contexts/CurrentUserContext";
+import { Route, Routes } from "react-router-dom";
 
 function App() {
   //три переменные состояния и три функции, которые будут менять их значения
@@ -157,15 +158,24 @@ function App() {
         <div className="container">
           {/* Поддерево, в котором будет доступен контекст */}
           <Header />
-          <Main
-            onEditProfile={handleEditProfileClick}
-            onAddPlace={handleAddPlaceClick}
-            onEditAvatar={handleEditAvatarClick}
-            onCardClick={setSelectedCard}
-            onCardLike={handleCardLike}
-            onCardDelete={handleCardDelete}
-            cards={cards}
-          />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Main
+                  onEditProfile={handleEditProfileClick}
+                  onAddPlace={handleAddPlaceClick}
+                  onEditAvatar={handleEditAvatarClick}
+                  onCardClick={setSelectedCard}
+                  onCardLike={handleCardLike}
+                  onCardDelete={handleCardDelete}
+                  cards={cards}
+                />
+              }
+            />
+            <Route path="/sign-up" />
+            <Route path="/sign-in" />
+          </Routes>
 
           {/* PREVIEW IMAGE POPUP */}
           <ImagePopup card={selectedCard} onClose={closeAllPopups} />
@@ -195,7 +205,8 @@ function App() {
           <PopupWithForm
             name="delete-card"
             title="Вы уверены?"
-            buttonText="Да"></PopupWithForm>
+            buttonText="Да"
+          ></PopupWithForm>
 
           <Footer />
         </div>

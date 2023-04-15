@@ -24,7 +24,6 @@ function Login(props) {
             value={password || ""}
             onChange={handlePasswordChange}
           ></input>
-
           <button className="auth__form-submit-btn" type="submit">
             Войти
           </button>

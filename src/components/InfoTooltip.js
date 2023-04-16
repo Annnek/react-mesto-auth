@@ -1,3 +1,5 @@
+import SuccessIcon from "../images/SuccessIcon.svg";
+import FailIcon from "../images/FailIcon.svg";
 import React from "react";
 
 function InfoToolTip(props) {

@@ -10,7 +10,12 @@ import AddPlacePopup from "./AddPlacePopup.js";
 import ImagePopup from "./ImagePopup.js";
 import api from "../utils/Api.js";
 import CurrentUserContext from "../contexts/CurrentUserContext";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute.js";
+import Register from "./Register.js";
+import Login from "./Login.js";
+import * as auth from "../utils/auth.js";
+import InfoToolTip from "./InfoToolTip.js";
 
 function App() {
   //три переменные состояния и три функции, которые будут менять их значения
@@ -25,6 +30,13 @@ function App() {
   });
   const [cards, setCards] = useState([]);
   //const [isLoading, setIsLoading] = useState(false); //отслеживаем загрузку карточек
+
+  //из пр12
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [email, setEmail] = useState("");
+  const [isInfoToolTipPopupOpen, setInfoToolTipPopupOpen] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     api
@@ -54,6 +66,26 @@ function App() {
       });
   }, []);
 
+  useEffect(() => {
+    const jwt = localStorage.getItem("jwt");
+
+    if (jwt) {
+      auth
+        .checkToken(jwt)
+        .then((res) => {
+          setIsLoggedIn(true);
+          setEmail(res.data.email);
+          navigate("/");
+        })
+        .catch((err) => {
+          if (err.status === 401) {
+            console.log("401 — Токен не передан или передан не в том формате");
+          }
+          console.log("401 — Переданный токен некорректен");
+        });
+    }
+  }, []);
+
   const handleEditProfileClick = () => {
     setEditProfilePopupOpen(true);
   };
@@ -70,6 +102,7 @@ function App() {
     setAddPlacePopupOpen(false);
     setEditAvatarPopupOpen(false);
     setSelectedCard({});
+    setInfoToolTipPopupOpen(false);
   };
 
   function handleCardLike(card) {
@@ -152,30 +185,85 @@ function App() {
       });
   }
 
+  function handleRegisterSubmit(email, password) {
+    auth
+      .register(email, password)
+      .then((res) => {
+        setInfoToolTipPopupOpen(true);
+        setIsSuccess(true);
+        navigate("/sign-in");
+      })
+      .catch((err) => {
+        if (err.status === 400) {
+          console.log("400 - некорректно заполнено одно из полей");
+        }
+        setInfoToolTipPopupOpen(true);
+        setIsSuccess(false);
+      });
+  }
+
+  function handleLoginSubmit(email, password) {
+    auth
+      .login(email, password)
+      .then((res) => {
+        localStorage.setItem("jwt", res.token);
+        setIsLoggedIn(true);
+        setEmail(email);
+        navigate("/");
+      })
+      .catch((err) => {
+        if (err.status === 400) {
+          console.log("400 - не передано одно из полей");
+        } else if (err.status === 401) {
+          console.log("401 - пользователь с email не найден");
+        }
+      });
+  }
+
+  function handleSignOut() {
+    localStorage.removeItem("jwt");
+    setIsLoggedIn(false);
+    navigate("/sign-in");
+  }
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
         <div className="container">
           {/* Поддерево, в котором будет доступен контекст */}
-          <Header />
+          <Header
+            email={email}
+            onSignOut={handleSignOut}
+            isLoggedIn={isLoggedIn}
+          />
           <Routes>
-            <Route
+            <Route path="/sign-in">
+              <Login onLogin={handleLoginSubmit} />
+            </Route>
+            <Route path="/sign-up">
+              <Register onRegister={handleRegisterSubmit} />
+            </Route>
+
+            <ProtectedRoute
+              exact
               path="/"
-              element={
-                <Main
-                  onEditProfile={handleEditProfileClick}
-                  onAddPlace={handleAddPlaceClick}
-                  onEditAvatar={handleEditAvatarClick}
-                  onCardClick={setSelectedCard}
-                  onCardLike={handleCardLike}
-                  onCardDelete={handleCardDelete}
-                  cards={cards}
-                />
-              }
+              isLoggedIn={isLoggedIn}
+              onEditAvatar={handleEditAvatarClick}
+              onEditProfile={handleEditProfileClick}
+              onAddPlace={handleAddPlaceClick}
+              onCardClick={setSelectedCard}
+              onCardLike={handleCardLike}
+              onCardDelete={handleCardDelete}
+              cards={cards}
+              component={Main}
             />
-            <Route path="/sign-up" />
-            <Route path="/sign-in" />
+
+            <Route>
+              {isLoggedIn ? <Navigate to="/" /> : <Navigate to="/sign-in" />}
+            </Route>
           </Routes>
+
+          <Footer />
 
           {/* PREVIEW IMAGE POPUP */}
           <ImagePopup card={selectedCard} onClose={closeAllPopups} />
@@ -208,7 +296,11 @@ function App() {
             buttonText="Да"
           ></PopupWithForm>
 
-          <Footer />
+          <InfoToolTip
+            isOpen={isInfoToolTipPopupOpen}
+            onClose={closeAllPopups}
+            isSuccess={isSuccess}
+          />
         </div>
       </div>
     </CurrentUserContext.Provider>

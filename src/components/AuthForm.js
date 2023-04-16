@@ -1,7 +1,23 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 function AuthForm({ title, buttonText, onSubmit, isSubmitting }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  function handleEmailChange(e) {
+    setEmail(e.target.value);
+  }
+
+  function handlePasswordChange(e) {
+    setPassword(e.target.value);
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    onSubmit(email, password);
+  }
+
   return (
     <section className="auth">
       <h2 className="auth__title">{title}</h2>

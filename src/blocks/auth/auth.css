@@ -4,9 +4,3 @@
   width: 358px;
   color: #fff;
 }
-
-@media screen and (max-width: 500px) {
-  .auth {
-    width: 260px;
-  }
-}

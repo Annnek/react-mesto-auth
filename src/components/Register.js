@@ -1,6 +1,11 @@
+import React from "react";
 import AuthForm from "./AuthForm";
 
 function Register(props) {
+  function handleSubmit(email, password) {
+    props.onRegister(email, password);
+  }
+
   return (
     <AuthForm
       title="Регистрация"

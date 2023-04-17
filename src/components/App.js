@@ -10,7 +10,7 @@ import AddPlacePopup from "./AddPlacePopup.js";
 import ImagePopup from "./ImagePopup.js";
 import api from "../utils/Api.js";
 import CurrentUserContext from "../contexts/CurrentUserContext";
-import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
+import { Route, Switch, Redirect, useHistory } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute.js";
 import Register from "./Register.js";
 import Login from "./Login.js";
@@ -36,7 +36,7 @@ function App() {
   const [email, setEmail] = useState("");
   const [isInfoToolTipPopupOpen, setInfoToolTipPopupOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const navigate = useNavigate();
+  const history = useHistory();
 
   useEffect(() => {
     api
@@ -75,7 +75,7 @@ function App() {
         .then((res) => {
           setIsLoggedIn(true);
           setEmail(res.data.email);
-          navigate("/");
+          history("/");
         })
         .catch((err) => {
           if (err.status === 401) {
@@ -84,7 +84,7 @@ function App() {
           console.log("401 — Переданный токен некорректен");
         });
     }
-  }, []);
+  }, [history]);
 
   const handleEditProfileClick = () => {
     setEditProfilePopupOpen(true);
@@ -191,7 +191,7 @@ function App() {
       .then((res) => {
         setInfoToolTipPopupOpen(true);
         setIsSuccess(true);
-        navigate("/sign-in");
+        history("/sign-in");
       })
       .catch((err) => {
         if (err.status === 400) {
@@ -209,7 +209,7 @@ function App() {
         localStorage.setItem("jwt", res.token);
         setIsLoggedIn(true);
         setEmail(email);
-        navigate("/");
+        history("/");
       })
       .catch((err) => {
         if (err.status === 400) {
@@ -223,7 +223,7 @@ function App() {
   function handleSignOut() {
     localStorage.removeItem("jwt");
     setIsLoggedIn(false);
-    navigate("/sign-in");
+    history("/sign-in");
   }
 
   return (
@@ -236,14 +236,7 @@ function App() {
             onSignOut={handleSignOut}
             isLoggedIn={isLoggedIn}
           />
-          <Routes>
-            <Route path="/sign-in">
-              <Login onLogin={handleLoginSubmit} />
-            </Route>
-            <Route path="/sign-up">
-              <Register onRegister={handleRegisterSubmit} />
-            </Route>
-
+          <Switch>
             <ProtectedRoute
               exact
               path="/"
@@ -257,13 +250,19 @@ function App() {
               cards={cards}
               component={Main}
             />
+            <Route path="/sign-in">
+              <Login onLogin={handleLoginSubmit} />
+            </Route>
+            <Route path="/sign-up">
+              <Register onRegister={handleRegisterSubmit} />
+            </Route>
 
             <Route>
-              {isLoggedIn ? <Navigate to="/" /> : <Navigate to="/sign-in" />}
+              {isLoggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
             </Route>
-          </Routes>
+          </Switch>
 
-          <Footer />
+          {isLoggedIn && <Footer />}
 
           {/* PREVIEW IMAGE POPUP */}
           <ImagePopup card={selectedCard} onClose={closeAllPopups} />

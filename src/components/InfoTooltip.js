@@ -1,5 +1,5 @@
-import SuccessIcon from "../images/SuccessIcon.svg";
-import FailIcon from "../images/FailIcon.svg";
+import IconSuccess from "../images/IconSuccess.svg";
+import IconFail from "../images/IconFail.svg";
 import React from "react";
 
 function InfoToolTip(props) {
@@ -7,13 +7,12 @@ function InfoToolTip(props) {
     <div
       className={`popup popup_type_tooltip ${
         props.isOpen ? "popup_opened" : ""
-      }`}
-    >
+      }`}>
       <div className="popup__content">
         {props.isSuccess ? (
           <>
             <img
-              src={`${SuccessIcon}`}
+              src={`${IconSuccess}`}
               alt="Регистрация прошла успешно."
               className="popup__tooltip_image"
             />
@@ -24,7 +23,7 @@ function InfoToolTip(props) {
         ) : (
           <>
             <img
-              src={`${FailIcon}`}
+              src={`${IconFail}`}
               alt="Регистрация не была выполнена."
               className="popup__tooltip_image"
             />
@@ -37,8 +36,7 @@ function InfoToolTip(props) {
         <button
           type="button"
           className="popup__close"
-          onClick={props.onClose}
-        ></button>
+          onClick={props.onClose}></button>
       </div>
     </div>
   );

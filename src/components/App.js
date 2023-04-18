@@ -75,7 +75,7 @@ function App() {
         .then((res) => {
           setIsLoggedIn(true);
           setEmail(res.data.email);
-          history("/");
+          history.push("/");
         })
         .catch((err) => {
           if (err.status === 401) {
@@ -191,7 +191,7 @@ function App() {
       .then((res) => {
         setInfoToolTipPopupOpen(true);
         setIsSuccess(true);
-        history("/sign-in");
+        history.push("/sign-in");
       })
       .catch((err) => {
         if (err.status === 400) {
@@ -209,7 +209,7 @@ function App() {
         localStorage.setItem("jwt", res.token);
         setIsLoggedIn(true);
         setEmail(email);
-        history("/");
+        history.push("/");
       })
       .catch((err) => {
         if (err.status === 400) {
@@ -223,7 +223,7 @@ function App() {
   function handleSignOut() {
     localStorage.removeItem("jwt");
     setIsLoggedIn(false);
-    history("/sign-in");
+    history.push("/sign-in");
   }
 
   return (
@@ -292,8 +292,7 @@ function App() {
           <PopupWithForm
             name="delete-card"
             title="Вы уверены?"
-            buttonText="Да"
-          ></PopupWithForm>
+            buttonText="Да"></PopupWithForm>
 
           <InfoToolTip
             isOpen={isInfoToolTipPopupOpen}

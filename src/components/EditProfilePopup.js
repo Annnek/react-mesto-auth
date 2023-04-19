@@ -1,39 +1,49 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import PopupWithForm from "./PopupWithForm.js";
 import CurrentUserContext from "../contexts/CurrentUserContext.js";
+import { useFormAndValidation } from "../hooks/useFormAndValidation.js";
 
 function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const { values, handleChange, errors, isValid, resetForm } =
+    useFormAndValidation();
+  // const [name, setName] = useState("");
+  // const [description, setDescription] = useState("");
   const currentUser = useContext(CurrentUserContext);
 
-  function handleChangeName(e) {
-    setName(e.target.value);
-  }
+  // function handleChangeName(e) {
+  //   setName(e.target.value);
+  // }
 
-  function handleChangeDescription(e) {
-    setDescription(e.target.value);
-  }
+  // function handleChangeDescription(e) {
+  //   setDescription(e.target.value);
+  // }
 
   function handleSubmit(e) {
     // Запрещаем браузеру переходить по адресу формы
     e.preventDefault();
-
-    // Передаём значения управляемых компонентов во внешний обработчик
-    onUpdateUser({
-      name,
-      about: description,
-    });
+    if (isValid) {
+      // Передаём значения управляемых компонентов во внешний обработчик
+      onUpdateUser({
+        name: values.name,
+        about: values.about,
+      });
+    }
   }
 
-  // После загрузки текущего пользователя из API его данные будут использованы в управляемых компонентах.
-  // Нужно следить за isOpen (за состоянием открытия), чтобы вставлять в инпуты данные пользователя
-  //иначе, если мы удалим информацию из инпутов и просто закроем попап, то при следующем открытии инпуты будут пустые (без данных пользователя)
-  // Это будет своего рода сброс формы
+  // // После загрузки текущего пользователя из API его данные будут использованы в управляемых компонентах.
+  // // Нужно следить за isOpen (за состоянием открытия), чтобы вставлять в инпуты данные пользователя
+  // //иначе, если мы удалим информацию из инпутов и просто закроем попап, то при следующем открытии инпуты будут пустые (без данных пользователя)
+  // // Это будет своего рода сброс формы
+  // useEffect(() => {
+  //   setName(currentUser.name);
+  //   setDescription(currentUser.about);
+  // }, [currentUser, isOpen]);
+
   useEffect(() => {
-    setName(currentUser.name);
-    setDescription(currentUser.about);
-  }, [currentUser, isOpen]);
+    if (currentUser) {
+      resetForm(currentUser);
+    }
+  }, [currentUser, resetForm, isOpen]);
 
   return (
     <PopupWithForm
@@ -52,10 +62,10 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
         minLength="2"
         maxLength="40"
         required
-        value={name}
-        onChange={handleChangeName}
+        value={values.name}
+        onChange={handleChange}
       />
-      <span className="inputName-error popup__input-error"></span>
+      <span className="inputName-error popup__input-error">{errors.name}</span>
       <input
         className="popup__input popup__input_type_job"
         type="text"
@@ -65,10 +75,12 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
         minLength="2"
         maxLength="200"
         required
-        value={description}
-        onChange={handleChangeDescription}
+        value={values.about}
+        onChange={handleChange}
       />
-      <span className="inputJob-error popup__input-error"></span>
+      <span className="inputJob-error popup__input-error">
+        {errors.description}
+      </span>
     </PopupWithForm>
   );
 }

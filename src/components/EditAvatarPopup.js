@@ -1,7 +1,11 @@
 import React, { useRef, useEffect } from "react";
 import PopupWithForm from "./PopupWithForm.js";
+import { useFormAndValidation } from "../hooks/useFormAndValidation.js";
 
 function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
+  const { values, handleChange, errors, isValid, resetForm } =
+    useFormAndValidation();
+
   const avatarRef = useRef(null); // создание рефа для инпута аватара, записываем объект, возвращаемый хуком, в переменную
 
   useEffect(() => {
@@ -10,10 +14,12 @@ function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-
-    onUpdateAvatar({
-      avatar: avatarRef.current.value, // получение значения инпута через реф
-    });
+    if (isValid) {
+      resetForm(); // вызов resetForm перед отправкой данных
+      onUpdateAvatar({
+        avatar: avatarRef.current.value, // получение значения инпута через реф
+      });
+    }
   }
 
   return (
@@ -32,8 +38,12 @@ function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
         id="inputAvatarLink"
         placeholder="Ссылка на картинку"
         ref={avatarRef} // передача рефа в инпут
+        value={values.avatar} // добавить значение из useFormAndValidation
+        onChange={handleChange} // добавить обработчик изменений
       />
-      <span className="inputAvatarLink-error popup__input-error"></span>
+      <span className="inputAvatarLink-error popup__input-error">
+        {errors.avatar}
+      </span>
     </PopupWithForm>
   );
 }

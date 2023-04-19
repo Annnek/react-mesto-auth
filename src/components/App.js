@@ -15,7 +15,7 @@ import ProtectedRoute from "./ProtectedRoute.js";
 import Register from "./Register.js";
 import Login from "./Login.js";
 import * as auth from "../utils/auth.js";
-import InfoToolTip from "./InfoTool";
+import InfoToolTip from "./InfoToolTip.js";
 
 function App() {
   //три переменные состояния и три функции, которые будут менять их значения

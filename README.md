@@ -4,6 +4,10 @@
 
 Основной стек технологий: HTML + CSS + JS + React + БЭМ
 
+В данной работе реализована функция регистрации и авторизации пользователя.
+Результат можно посмотреть по ссылке: https://annnek.github.io/react-mesto-auth/
+Доступ для проверки: логин Qwerty@mail.ru, пароль 123456
+
 ### Подробнее:
 
 - React
@@ -27,9 +31,9 @@
 - Accessibility
 - Webpack
 
-Результат можно посмотреть по ссылке: https://annnek.github.io/mesto-react/
+Предыдущая версия проекта (с реактом): https://annnek.github.io/mesto-react/
 
-Предыдущая версия проекта (без реакта) выложена: https://github.com/Annnek/mesto
+Предыдущая версия проекта (без реакта): https://github.com/Annnek/mesto
 
 <!--
 Версии проекта:

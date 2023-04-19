@@ -1,34 +1,45 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import PopupWithForm from "./PopupWithForm.js";
+import { useFormAndValidation } from "../hooks/useFormAndValidation.js";
 
 function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
-  const [formValues, setFormValues] = useState({
-    name: "",
-    link: "",
-  });
+  const { values, handleChange, errors, isValid, resetForm } =
+    useFormAndValidation();
 
+  // const [formValues, setFormValues] = useState({
+  //   name: "",
+  //   link: "",
+  // });
+
+  // useEffect(() => {
+  //   setFormValues({
+  //     name: "",
+  //     link: "",
+  //   });
+  // }, [isOpen]);
+
+  // function handleInputChange(e) {
+  //   const { name, value } = e.target;
+  //   setFormValues({
+  //     ...formValues,
+  //     [name]: value,
+  //   });
+  // }
+
+  //сброс значений формы с помощью функции resetForm, когда изменяется значение isOpen
   useEffect(() => {
-    setFormValues({
-      name: "",
-      link: "",
-    });
-  }, [isOpen]);
+    resetForm();
+  }, [isOpen, resetForm]);
 
-  function handleInputChange(e) {
-    const { name, value } = e.target;
-    setFormValues({
-      ...formValues,
-      [name]: value,
-    });
-  }
-
+  // проверка на валидность формы перед отправкой данных
   function handleSubmit(e) {
-    // Запрещаем браузеру переходить по адресу формы
     e.preventDefault();
-    onAddPlace({
-      name: formValues.name,
-      link: formValues.link,
-    });
+    if (isValid) {
+      onAddPlace({
+        name: values.name,
+        link: values.link,
+      });
+    }
   }
 
   return (
@@ -48,10 +59,10 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
         minLength="2"
         maxLength="30"
         required
-        value={formValues.name}
-        onChange={handleInputChange}
+        value={values.name} // валидация
+        onChange={handleChange} // валидация
       />
-      <span className="inputPlace-error popup__input-error"></span>
+      <span className="inputPlace-error popup__input-error">{errors.name}</span>
       <input
         className="popup__input popup__input_type_place-link"
         type="url"
@@ -59,10 +70,12 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
         id="inputPlaceLink"
         placeholder="Ссылка на картинку"
         required
-        value={formValues.link}
-        onChange={handleInputChange}
+        value={values.link} //валидация
+        onChange={handleChange} //валидация
       />
-      <span className="inputPlaceLink-error popup__input-error"></span>
+      <span className="inputPlaceLink-error popup__input-error">
+        {errors.link}
+      </span>
     </PopupWithForm>
   );
 }
